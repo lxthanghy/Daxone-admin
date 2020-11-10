@@ -40,12 +40,17 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td>Le Xuan Thang</td>
-                      <td>lxthanghy@gmail.com</td>
-                      <td>0971574029</td>
-                      <td><span class="badge badge-success">Delivered</span></td>
+                    <tr *ngFor="let supplier of suppliers; let i = index">
+                      <td>{{ i + 1 }}</td>
+                      <td>{{supplier.name}}</td>
+                      <td>{{supplier.email}}</td>
+                      <td>{{supplier.phone}}</td>
+                      <td>
+                        <span *ngIf="supplier.status;else unactive" class="badge badge-success">Active</span>
+                        <ng-template #unactive>
+                          <span class="badge badge-danger">Unactive</span>
+                        </ng-template>
+                      </td>
                       <td>
                         <button type="button" (click)="displayEdit = true"
                           class="btn btn-primary waves-effect waves-light mr-1"><i

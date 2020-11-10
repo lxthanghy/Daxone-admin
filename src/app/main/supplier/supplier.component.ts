@@ -20,6 +20,7 @@ export class SupplierComponent implements OnInit {
   displayEdit: boolean = false;
   displayAdd: boolean = false;
   formAdd: FormGroup;
+  suppliers: any;
   constructor(
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
@@ -34,23 +35,33 @@ export class SupplierComponent implements OnInit {
       phone: this.fb.control('', [Validators.required]),
       status: this.fb.control(true),
     });
+    this.getAll();
+  }
+  getAll(): void {
+    this.supplierService
+      .getAll()
+      .pipe(first())
+      .subscribe((data) => {
+        this.suppliers = data;
+      });
   }
   onAdd(): void {
-    this.displayAdd = false;
-    this.clearModalAdd();
     //console.log(this.formAdd.value);
-    // this.supplierService
-    //   .addSupplier(this.formAdd.value)
-    //   .pipe(first())
-    //   .subscribe((res) => {
-    //     if (res > 0) {
-    //       this.messageService.add({
-    //         severity: 'success',
-    //         summary: 'Thông báo',
-    //         detail: 'Thêm thành công !',
-    //       });
-    //     }
-    //   });
+    this.supplierService
+      .addSupplier(this.formAdd.value)
+      .pipe(first())
+      .subscribe((res) => {
+        if (res > 0) {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Thông báo',
+            detail: 'Thêm thành công !',
+          });
+          this.displayAdd = false;
+          this.clearModalAdd();
+          this.getAll();
+        }
+      });
   }
   clearModalAdd() {
     this.formAdd = this.fb.group({
