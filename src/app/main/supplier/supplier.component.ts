@@ -30,6 +30,8 @@ export class SupplierComponent implements OnInit {
   pageSize = 2;
   page = 1;
   txtSearchName = '';
+  sortByName = '';
+  sortByCreatedDate = 'desc';
   constructor(
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
@@ -62,6 +64,8 @@ export class SupplierComponent implements OnInit {
       page: this.page,
       pageSize: this.pageSize,
       nameSearch: this.txtSearchName,
+      sortByName: this.sortByName,
+      sortByCreatedDate: this.sortByCreatedDate,
     };
     setTimeout(() => {
       this.supplierService

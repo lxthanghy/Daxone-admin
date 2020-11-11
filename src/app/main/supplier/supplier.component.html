@@ -41,6 +41,24 @@
                   </select>
                   <label> dòng</label>
                 </div>
+                <div class="col-sm-4">
+                  <label class="mr-1">Sắp xếp theo tên </label>
+                  <select class="form-control form-control-sm mr-1" [(ngModel)]="sortByName"
+                    (ngModelChange)="loadData(1)" style="width: 100px;display: inline!important;">
+                    <option [value]="'asc'">Tăng dần</option>
+                    <option [value]="'desc'">Giảm dần</option>
+                    <option [value]="'reset'">Reset</option>
+                  </select>
+                </div>
+                <div class="col-sm-4">
+                  <label class="mr-1">Sắp xếp theo ngày tạo </label>
+                  <select class="form-control form-control-sm mr-1" [(ngModel)]="sortByCreatedDate"
+                    (ngModelChange)="loadData(1)" style="width: 100px;display: inline!important;">
+                    <option [value]="'desc'">Mới nhất</option>
+                    <option [value]="'asc'">Cũ nhất</option>
+                    <option [value]="'reset'">Reset</option>
+                  </select>
+                </div>
               </div>
               <div class="table-responsive">
                 <table class="table table-hover">
@@ -205,7 +223,6 @@
     </div>
   </form>
 </p-dialog>
-<p-toast position="top-right"></p-toast>
 <p-confirmDialog #cd [style]="{width: '50vw'}" [baseZIndex]="10000" icon="pi pi-exclamation-triangle">
   <p-footer>
     <button type="button" (click)="cd.accept()" class="btn btn-primary waves-effect waves-light"> <i
@@ -217,3 +234,4 @@
 <ngx-spinner bdColor="rgba(51,51,51,0.8)" size="medium" color="#ffbe76" type="pacman">
   <p style="font-size: 20px; color: white">Chờ đi...</p>
 </ngx-spinner>
+<p-toast position="top-right"></p-toast>

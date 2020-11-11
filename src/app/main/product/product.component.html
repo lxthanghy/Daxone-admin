@@ -12,8 +12,232 @@
           </ol>
         </div>
       </div> <!-- end row -->
+      <div class="row">
+        <div class="col-xl-12">
+          <div class="card m-b-30">
+            <div class="card-body">
+              <h4 class="mt-0 header-title mb-4">Products</h4>
+              <div class="row mb-1">
+                <div class="col-sm-7"><button type="button" (click)="displayAdd = true"
+                    class="btn btn-success waves-effect waves-light"> <i class="mdi mdi-plus"></i>
+                    Add</button></div>
+                <div class="col-sm-5" style="display: flex;">
+                  <input class="form-control" type="search" value="{{txtSearchName}}" [(ngModel)]="txtSearchName"
+                    id="example-search-input" style="width: 90%;">
+                  <button type="button" (click)="onSearch()" class="btn btn-info waves-effect waves-light"><i
+                      class="icon-magnifier"></i></button>
+                </div>
+              </div>
+              <div class="row mb-1 mt-3">
+                <div class="col-sm-4">
+                  <label class="mr-1">Hiển thị </label>
+                  <select class="form-control form-control-sm mr-1" [(ngModel)]="pageSize" (ngModelChange)="loadData(1)"
+                    style="width: 100px;display: inline!important;">
+                    <option [value]="2">2</option>
+                    <option [value]="5">5</option>
+                    <option [value]="7">7</option>
+                    <option [value]="10">10</option>
+                    <option [value]="15">15</option>
+                  </select>
+                  <label> dòng</label>
+                </div>
+                <div class="col-sm-4">
+                  <label class="mr-1">Sắp xếp theo tên </label>
+                  <select class="form-control form-control-sm mr-1" [(ngModel)]="sortByName"
+                    (ngModelChange)="loadData(1)" style="width: 100px;display: inline!important;">
+                    <option [value]="'asc'">Tăng dần</option>
+                    <option [value]="'desc'">Giảm dần</option>
+                    <option [value]="'reset'">Reset</option>
+                  </select>
+                </div>
+                <div class="col-sm-4">
+                  <label class="mr-1">Sắp xếp theo ngày tạo </label>
+                  <select class="form-control form-control-sm mr-1" [(ngModel)]="sortByCreatedDate"
+                    (ngModelChange)="loadData(1)" style="width: 100px;display: inline!important;">
+                    <option [value]="'desc'">Mới nhất</option>
+                    <option [value]="'asc'">Cũ nhất</option>
+                    <option [value]="'reset'">Reset</option>
+                  </select>
+                </div>
+                <div class="col-sm-4 mt-3">
+                  <label class="mr-1">Sắp xếp theo giá </label>
+                  <select class="form-control form-control-sm mr-1" [(ngModel)]="sortByPrice"
+                    (ngModelChange)="loadData(1)" style="width: 100px;display: inline!important;">
+                    <option [value]="'asc'">Tăng dần</option>
+                    <option [value]="'desc'">Giảm dần</option>
+                    <option [value]="'reset'">Reset</option>
+                  </select>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Name</th>
+                      <th scope="col">Image</th>
+                      <th scope="col">Quantity</th>
+                      <th scope="col">Price</th>
+                      <th scope="col">Status</th>
+                      <th scope="col">ShowOnHome</th>
+                      <th scope="col">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let product of products; let i = index">
+                      <td>{{ i + 1 }}</td>
+                      <td>{{product.name}}</td>
+                      <td>
+                        <img height="50px" src="../../../assets/Uploads/product/{{product.imageUrl}}" alt="">
+                      </td>
+                      <td>{{product.quantity}}</td>
+                      <td>{{product.price | currency : "VND"}}</td>
+                      <td>
+                        <span *ngIf="product.status;else unactiveStatus" class="badge badge-success">Active</span>
+                        <ng-template #unactiveStatus>
+                          <span class="badge badge-danger">Unactive</span>
+                        </ng-template>
+                      </td>
+                      <td>
+                        <span *ngIf="product.showOnHome;else unactiveShowOnHome"
+                          class="badge badge-success">Active</span>
+                        <ng-template #unactiveShowOnHome>
+                          <span class="badge badge-danger">Unactive</span>
+                        </ng-template>
+                      </td>
+                      <td>
+                        <button type="button" class="btn btn-primary waves-effect waves-light mr-1"><i
+                            class="mdi mdi-information-outline"></i></button>
+                        <button type="button" class="btn btn-info waves-effect waves-light mr-1"><i
+                            class="mdi mdi-pencil-outline"></i></button>
+                        <button type="button" class="btn btn-danger waves-effect waves-light"><i
+                            class="mdi mdi-trash-can-outline"></i></button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <ngb-pagination [collectionSize]="totalRecords" [pageSize]="pageSize" [(page)]="page"
+                (pageChange)="loadData($event)" [boundaryLinks]=" true" [maxSize]="10" [rotate]="true">
+              </ngb-pagination>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <!-- end page-title -->
   </div>
   <!-- container-fluid -->
 </div>
+<p-dialog #modelAdd [(visible)]="displayAdd" [style]="{width: '50vw'}" [position]="'top'" [dismissableMask]="true"
+  [modal]="true">
+  <p-header>
+    Thêm mới
+  </p-header>
+  <form (ngSubmit)="onAdd()">
+    <div class="form-group">
+      <label>Tên sản phẩm:</label>
+      <input type="text" class="form-control" placeholder="Tên sản phẩm">
+    </div>
+    <div class="form-group">
+      <label>Giá:</label>
+      <input type="number" [min]="0" class="form-control" placeholder="Giá">
+    </div>
+    <div class="form-group">
+      <label>Số lượng:</label>
+      <input type="number" [min]="0" class="form-control" placeholder="Số lượng">
+    </div>
+    <div class="form-group">
+      <label class="mr-2">Nhà cung cấp:</label>
+      <select class="form-control form-control-sm mr-1" style="width: 200px;display: inline!important;">
+        <option [value]="'desc'">Mới nhất</option>
+        <option [value]="'asc'">Cũ nhất</option>
+        <option [value]="'reset'">Reset</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="mr-2">Loại sản phẩm:</label>
+      <select class="form-control form-control-sm mr-1" style="width: 200px;display: inline!important;">
+        <option [value]="'desc'">Mới nhất</option>
+        <option [value]="'asc'">Cũ nhất</option>
+        <option [value]="'reset'">Reset</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Image:</label>
+    </div>
+    <div class="form-group">
+      <label>Giá khuyến mãi:</label>
+      <input type="number" [min]="0" class="form-control" placeholder="Giá khuyến mãi">
+    </div>
+    <div class="form-group">
+      <label>Bảo hành (năm):</label>
+      <input type="number" [min]="0" class="form-control" placeholder="Bảo hành">
+    </div>
+    <div class="form-group">
+      <label>Frame (khung):</label>
+      <textarea class="form-control" rows="3" placeholder="Thông số khung"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Rims (Vành):</label>
+      <textarea class="form-control" rows="3" placeholder="Thông số vành"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Tires (Lốp):</label>
+      <textarea class="form-control" rows="3" placeholder="Thông số lốp"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Weight (Trọng lượng):</label>
+      <textarea class="form-control" rows="3" placeholder="Trọng lượng"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Weight limit (Tải trọng tối đa):</label>
+      <textarea class="form-control" rows="3" placeholder="Tải trọng tối đa"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Trạng thái:</label>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="status" [value]="true" checked>
+        <label class="form-check-label">
+          Active
+        </label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="status" [value]="false">
+        <label class="form-check-label">
+          Unactive
+        </label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Show on home:</label>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="showOnHome" [value]="true" checked>
+        <label class="form-check-label">
+          Active
+        </label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="showOnHome" [value]="false">
+        <label class="form-check-label">
+          Unactive
+        </label>
+      </div>
+    </div>
+    <div class="form-group">
+      <div>
+        <button type="submit" class="btn btn-primary waves-effect waves-light mr-2">
+          <i class="mdi mdi-check"></i>
+          Thêm
+        </button>
+        <button type="button" (click)="displayAdd = false" class="btn btn-danger waves-effect waves-light"> <i
+            class="mdi mdi-window-close"></i>
+          Huỷ</button>
+      </div>
+    </div>
+  </form>
+</p-dialog>
+<ngx-spinner bdColor="rgba(51,51,51,0.8)" size="medium" color="#ffbe76" type="pacman">
+  <p style="font-size: 20px; color: white">Chờ đi...</p>
+</ngx-spinner>
+<p-toast position="top-right"></p-toast>
