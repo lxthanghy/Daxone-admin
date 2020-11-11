@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 const httpOptions = {
   headers: new HttpHeaders({
     'Content-Type': 'application/json',
@@ -15,6 +16,11 @@ export class SupplierService {
   getAll() {
     const url = `${this.API_URL}`;
     return this.http.get<any>(url);
+  }
+  pagination(data: any): Observable<any> {
+    const url = `${this.API_URL}/pagination`;
+    var body = JSON.stringify(data);
+    return this.http.post<any>(url, body, httpOptions);
   }
   addSupplier(supplier: any): Observable<number> {
     const url = `${this.API_URL}`;

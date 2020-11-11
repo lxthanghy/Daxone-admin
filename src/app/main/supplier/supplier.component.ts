@@ -25,6 +25,10 @@ export class SupplierComponent implements OnInit {
   formEdit: FormGroup;
   suppliers: any;
   id_Edit = 0;
+  totalRecords: any;
+  pageSize = 2;
+  page = 1;
+  txtSearchName = '';
   constructor(
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
@@ -51,31 +55,109 @@ export class SupplierComponent implements OnInit {
   }
   getAll(): void {
     this.spinner.show();
-    this.supplierService
-      .getAll()
-      .pipe(first())
-      .subscribe((data) => {
-        this.suppliers = data;
-        this.spinner.hide();
-      });
+    var data = {
+      page: this.page,
+      pageSize: this.pageSize,
+    };
+    setTimeout(() => {
+      this.supplierService
+        .pagination(data)
+        .pipe(first())
+        .subscribe({
+          next: (model) => {
+            this.suppliers = model.data;
+            this.totalRecords = model.totalItems;
+            this.spinner.hide();
+          },
+          error: (err) => {
+            console.log(err);
+            this.spinner.hide();
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Thông báo',
+              detail: `Đã có lỗi !`,
+            });
+          },
+        });
+    }, 400);
+  }
+  pageChange(page) {
+    this.spinner.show();
+    var data = {
+      page: page,
+      nameSearch: this.txtSearchName,
+      pageSize: this.pageSize,
+    };
+    setTimeout(() => {
+      this.supplierService
+        .pagination(data)
+        .pipe(first())
+        .subscribe({
+          next: (model) => {
+            this.suppliers = model.data;
+            this.spinner.hide();
+          },
+          error: (err) => {
+            console.log(err);
+            this.spinner.hide();
+          },
+        });
+    }, 400);
+  }
+  onSearch(): void {
+    this.spinner.show();
+    var data = {
+      page: 1,
+      pageSize: this.pageSize,
+      nameSearch: this.txtSearchName,
+    };
+    setTimeout(() => {
+      this.supplierService
+        .pagination(data)
+        .pipe(first())
+        .subscribe({
+          next: (model) => {
+            this.suppliers = model.data;
+            this.totalRecords = model.totalItems;
+            this.spinner.hide();
+          },
+          error: (err) => {
+            console.log(err);
+            this.spinner.hide();
+          },
+        });
+    }, 400);
   }
   onAdd(): void {
     //console.log(this.formAdd.value);
     this.supplierService
       .addSupplier(this.formAdd.value)
       .pipe(first())
-      .subscribe((res) => {
-        if (res > 0) {
+      .subscribe({
+        next: (res) => {
+          if (res > 0) {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Thông báo',
+              detail: 'Thêm thành công !',
+            });
+            this.displayAdd = false;
+            this.clearModalAdd();
+            this.getAll();
+          }
+        },
+        error: (err) => {
+          console.log(err);
           this.messageService.add({
-            severity: 'success',
+            severity: 'error',
             summary: 'Thông báo',
-            detail: 'Thêm thành công !',
+            detail: `Đã có lỗi !`,
           });
-          this.displayAdd = false;
-          this.clearModalAdd();
-          this.getAll();
-        }
+        },
       });
+  }
+  onDetail(id: any): void {
+    this.displayDetail = true;
   }
   onEdit(id: any): void {
     this.spinner.show();
@@ -138,7 +220,7 @@ export class SupplierComponent implements OnInit {
       status: this.fb.control(true),
     });
   }
-  confirmDelete(id: any) {
+  onDelete(id: any) {
     this.confirmationService.confirm({
       header: 'Xoá nhà cung cấp ?',
       message: 'Bạn có chắc chắn xoá ?',
