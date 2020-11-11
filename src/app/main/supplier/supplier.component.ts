@@ -51,13 +51,14 @@ export class SupplierComponent implements OnInit {
       phone: this.fb.control('', [Validators.required]),
       status: this.fb.control(true),
     });
-    this.getAll();
+    this.loadData();
   }
-  getAll(): void {
+  loadData(): void {
     this.spinner.show();
     var data = {
-      page: this.page,
+      page: 1,
       pageSize: this.pageSize,
+      nameSearch: this.txtSearchName,
     };
     setTimeout(() => {
       this.supplierService
@@ -79,9 +80,9 @@ export class SupplierComponent implements OnInit {
             });
           },
         });
-    }, 400);
+    }, 300);
   }
-  pageChange(page) {
+  onPageChange(page) {
     this.spinner.show();
     var data = {
       page: page,
@@ -102,31 +103,7 @@ export class SupplierComponent implements OnInit {
             this.spinner.hide();
           },
         });
-    }, 400);
-  }
-  onSearch(): void {
-    this.spinner.show();
-    var data = {
-      page: 1,
-      pageSize: this.pageSize,
-      nameSearch: this.txtSearchName,
-    };
-    setTimeout(() => {
-      this.supplierService
-        .pagination(data)
-        .pipe(first())
-        .subscribe({
-          next: (model) => {
-            this.suppliers = model.data;
-            this.totalRecords = model.totalItems;
-            this.spinner.hide();
-          },
-          error: (err) => {
-            console.log(err);
-            this.spinner.hide();
-          },
-        });
-    }, 400);
+    }, 300);
   }
   onAdd(): void {
     //console.log(this.formAdd.value);
@@ -143,7 +120,7 @@ export class SupplierComponent implements OnInit {
             });
             this.displayAdd = false;
             this.clearModalAdd();
-            this.getAll();
+            this.loadData();
           }
         },
         error: (err) => {
@@ -202,7 +179,7 @@ export class SupplierComponent implements OnInit {
                 detail: 'Cập nhật thành công !',
               });
               this.displayEdit = false;
-              this.getAll();
+              this.loadData();
             }
           },
           error: (err) => {
@@ -237,7 +214,7 @@ export class SupplierComponent implements OnInit {
                   summary: 'Thông báo',
                   detail: 'Đã xoá thành công !',
                 });
-                this.getAll();
+                this.loadData();
               }
             },
             error: (err) => {

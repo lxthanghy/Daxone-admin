@@ -24,8 +24,22 @@
                 <div class="col-sm-5" style="display: flex;">
                   <input class="form-control" type="search" value="{{txtSearchName}}" [(ngModel)]="txtSearchName"
                     id="example-search-input" style="width: 90%;">
-                  <button type="button" (click)="onSearch()" class="btn btn-info waves-effect waves-light"><i
+                  <button type="button" (click)="loadData()" class="btn btn-info waves-effect waves-light"><i
                       class="icon-magnifier"></i></button>
+                </div>
+              </div>
+              <div class="row mb-1 mt-3">
+                <div class="col-sm-4">
+                  <label class="mr-1">Hiển thị </label>
+                  <select class="form-control form-control-sm mr-1" [(ngModel)]="pageSize" (ngModelChange)="loadData()"
+                    style="width: 100px;display: inline!important;">
+                    <option [value]="2">2</option>
+                    <option [value]="5">5</option>
+                    <option [value]="7">7</option>
+                    <option [value]="10">10</option>
+                    <option [value]="15">15</option>
+                  </select>
+                  <label> dòng</label>
                 </div>
               </div>
               <div class="table-responsive">
@@ -68,7 +82,7 @@
                 </table>
               </div>
               <ngb-pagination [collectionSize]="totalRecords" [pageSize]="pageSize" [(page)]="page"
-                [boundaryLinks]="true" [maxSize]="10" [rotate]="true" (pageChange)="pageChange($event)">
+                [boundaryLinks]="true" [maxSize]="10" [rotate]="true" (pageChange)="onPageChange($event)">
               </ngb-pagination>
             </div>
           </div>
