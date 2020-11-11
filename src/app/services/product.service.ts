@@ -27,6 +27,14 @@ export class ProductService {
     const url = `${this.API_URL}/${id}`;
     return this.http.get<any>(url);
   }
+  getDataSelectSupplier(): Observable<any> {
+    const url = `${this.API_URL}/data-select-supplier`;
+    return this.http.get<any>(url);
+  }
+  getDataSelectProductCategory(): Observable<any> {
+    const url = `${this.API_URL}/data-select-product-category`;
+    return this.http.get<any>(url);
+  }
   updateProduct(id: any, product: any): Observable<number> {
     const url = `${this.API_URL}/${id}`;
     var body = JSON.stringify(product);

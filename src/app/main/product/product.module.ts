@@ -4,6 +4,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import { ToastModule } from 'primeng/toast';
+import { FileUploadModule } from 'primeng/fileupload';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgxSpinnerModule } from 'ngx-spinner';
@@ -26,6 +27,7 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     DialogModule,
     ToastModule,
+    FileUploadModule,
     ConfirmDialogModule,
     ReactiveFormsModule,
     NgbPaginationModule,

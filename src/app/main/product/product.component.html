@@ -134,76 +134,85 @@
   <p-header>
     Thêm mới
   </p-header>
-  <form (ngSubmit)="onAdd()">
+  <form [formGroup]="formAdd" (ngSubmit)="onAdd()">
     <div class="form-group">
       <label>Tên sản phẩm:</label>
-      <input type="text" class="form-control" placeholder="Tên sản phẩm">
+      <input type="text" class="form-control" formControlName="name" placeholder="Tên sản phẩm">
     </div>
     <div class="form-group">
       <label>Giá:</label>
-      <input type="number" [min]="0" class="form-control" placeholder="Giá">
+      <input type="number" [min]="0" class="form-control" formControlName="price" placeholder="Giá">
     </div>
     <div class="form-group">
       <label>Số lượng:</label>
-      <input type="number" [min]="0" class="form-control" placeholder="Số lượng">
+      <input type="number" [min]="0" class="form-control" formControlName="quantity" placeholder="Số lượng">
     </div>
     <div class="form-group">
       <label class="mr-2">Nhà cung cấp:</label>
-      <select class="form-control form-control-sm mr-1" style="width: 200px;display: inline!important;">
-        <option [value]="'desc'">Mới nhất</option>
-        <option [value]="'asc'">Cũ nhất</option>
-        <option [value]="'reset'">Reset</option>
+      <select class="form-control form-control-sm mr-1" formControlName="supplierId"
+        style="width: 200px;display: inline!important;">
+        <ng-container *ngFor="let suppiler of dataSelectSupplier">
+          <option [value]="suppiler.id">{{suppiler.name}}</option>
+        </ng-container>
       </select>
     </div>
     <div class="form-group">
       <label class="mr-2">Loại sản phẩm:</label>
-      <select class="form-control form-control-sm mr-1" style="width: 200px;display: inline!important;">
-        <option [value]="'desc'">Mới nhất</option>
-        <option [value]="'asc'">Cũ nhất</option>
-        <option [value]="'reset'">Reset</option>
+      <select class="form-control form-control-sm mr-1" formControlName="categoryId"
+        style="width: 200px;display: inline!important;">
+        <ng-container *ngFor="let productCategory of dataSelectProductCategory">
+          <option [value]="productCategory.id">{{productCategory.name}}</option>
+        </ng-container>
       </select>
     </div>
     <div class="form-group">
       <label>Image:</label>
+      <p-fileUpload #file_image mode="advanced" [showUploadButton]="false" cancelLabel="Hủy" chooseLabel="Chọn ảnh"
+        multiple="false" accept="image/*" maxFileSize="1000000">
+      </p-fileUpload>
     </div>
     <div class="form-group">
       <label>Giá khuyến mãi:</label>
-      <input type="number" [min]="0" class="form-control" placeholder="Giá khuyến mãi">
+      <input type="number" [min]="0" class="form-control" formControlName="promotionPrice" placeholder="Giá khuyến mãi">
     </div>
     <div class="form-group">
       <label>Bảo hành (năm):</label>
-      <input type="number" [min]="0" class="form-control" placeholder="Bảo hành">
+      <input type="number" [min]="0" class="form-control" formControlName="warranty" placeholder="Bảo hành">
     </div>
     <div class="form-group">
       <label>Frame (khung):</label>
-      <textarea class="form-control" rows="3" placeholder="Thông số khung"></textarea>
+      <textarea class="form-control" rows="3" formControlName="frame" placeholder="Thông số khung"></textarea>
     </div>
     <div class="form-group">
       <label>Rims (Vành):</label>
-      <textarea class="form-control" rows="3" placeholder="Thông số vành"></textarea>
+      <textarea class="form-control" rows="3" formControlName="rims" placeholder="Thông số vành"></textarea>
     </div>
     <div class="form-group">
       <label>Tires (Lốp):</label>
-      <textarea class="form-control" rows="3" placeholder="Thông số lốp"></textarea>
+      <textarea class="form-control" rows="3" formControlName="tires" placeholder="Thông số lốp"></textarea>
     </div>
     <div class="form-group">
       <label>Weight (Trọng lượng):</label>
-      <textarea class="form-control" rows="3" placeholder="Trọng lượng"></textarea>
+      <textarea class="form-control" rows="3" formControlName="weight" placeholder="Trọng lượng"></textarea>
     </div>
     <div class="form-group">
       <label>Weight limit (Tải trọng tối đa):</label>
-      <textarea class="form-control" rows="3" placeholder="Tải trọng tối đa"></textarea>
+      <textarea class="form-control" rows="3" formControlName="weightLimit" placeholder="Tải trọng tối đa"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Description (Mô tả):</label>
+      <textarea class="form-control" rows="5" formControlName="description" placeholder="Mô tả"></textarea>
     </div>
     <div class="form-group">
       <label>Trạng thái:</label>
       <div class="form-check">
-        <input class="form-check-input" type="radio" name="status" [value]="true" checked>
+        <input class="form-check-input" type="radio" formControlName="status" name="status" [value]="true" checked>
         <label class="form-check-label">
           Active
         </label>
       </div>
       <div class="form-check">
-        <input class="form-check-input" type="radio" name="status" [value]="false">
+        <input class="form-check-input" type="radio" formControlName="status" name="status" [value]="false">
         <label class="form-check-label">
           Unactive
         </label>
@@ -212,13 +221,14 @@
     <div class="form-group">
       <label>Show on home:</label>
       <div class="form-check">
-        <input class="form-check-input" type="radio" name="showOnHome" [value]="true" checked>
+        <input class="form-check-input" type="radio" formControlName="showOnHome" name="showOnHome" [value]="true"
+          checked>
         <label class="form-check-label">
           Active
         </label>
       </div>
       <div class="form-check">
-        <input class="form-check-input" type="radio" name="showOnHome" [value]="false">
+        <input class="form-check-input" type="radio" formControlName="showOnHome" name="showOnHome" [value]="false">
         <label class="form-check-label">
           Unactive
         </label>
