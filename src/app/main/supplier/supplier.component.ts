@@ -21,6 +21,7 @@ export class SupplierComponent implements OnInit {
   displayDetail: boolean = false;
   displayEdit: boolean = false;
   displayAdd: boolean = false;
+  checkSearch: boolean = false;
   formAdd: FormGroup;
   formEdit: FormGroup;
   suppliers: any;
@@ -51,12 +52,14 @@ export class SupplierComponent implements OnInit {
       phone: this.fb.control('', [Validators.required]),
       status: this.fb.control(true),
     });
-    this.loadData();
+    this.loadData(1);
   }
-  loadData(): void {
+  loadData(page): void {
     this.spinner.show();
+    if (this.checkSearch == true) this.page = 1;
+    else this.page = page;
     var data = {
-      page: 1,
+      page: this.page,
       pageSize: this.pageSize,
       nameSearch: this.txtSearchName,
     };
@@ -68,6 +71,7 @@ export class SupplierComponent implements OnInit {
           next: (model) => {
             this.suppliers = model.data;
             this.totalRecords = model.totalItems;
+            this.checkSearch = false;
             this.spinner.hide();
           },
           error: (err) => {
@@ -82,28 +86,9 @@ export class SupplierComponent implements OnInit {
         });
     }, 300);
   }
-  onPageChange(page) {
-    this.spinner.show();
-    var data = {
-      page: page,
-      nameSearch: this.txtSearchName,
-      pageSize: this.pageSize,
-    };
-    setTimeout(() => {
-      this.supplierService
-        .pagination(data)
-        .pipe(first())
-        .subscribe({
-          next: (model) => {
-            this.suppliers = model.data;
-            this.spinner.hide();
-          },
-          error: (err) => {
-            console.log(err);
-            this.spinner.hide();
-          },
-        });
-    }, 300);
+  onSearch(): void {
+    this.checkSearch = true;
+    this.loadData(1);
   }
   onAdd(): void {
     //console.log(this.formAdd.value);
@@ -120,7 +105,7 @@ export class SupplierComponent implements OnInit {
             });
             this.displayAdd = false;
             this.clearModalAdd();
-            this.loadData();
+            this.loadData(1);
           }
         },
         error: (err) => {
@@ -179,7 +164,7 @@ export class SupplierComponent implements OnInit {
                 detail: 'Cập nhật thành công !',
               });
               this.displayEdit = false;
-              this.loadData();
+              this.loadData(1);
             }
           },
           error: (err) => {
@@ -214,7 +199,7 @@ export class SupplierComponent implements OnInit {
                   summary: 'Thông báo',
                   detail: 'Đã xoá thành công !',
                 });
-                this.loadData();
+                this.loadData(1);
               }
             },
             error: (err) => {
