@@ -1,4 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  QueryList,
+  ViewChild,
+  ViewChildren,
+} from '@angular/core';
 import { ProductService } from '../../services/product.service';
 import { MessageService } from 'primeng/api';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -37,7 +43,8 @@ export class ProductComponent implements OnInit {
   sortByPrice = '';
   dataSelectSupplier: any;
   dataSelectProductCategory: any;
-  @ViewChild(FileUpload, { static: false }) file_image: FileUpload;
+  img_url_edit = '';
+  @ViewChildren(FileUpload) files: QueryList<FileUpload>;
   constructor(
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
@@ -48,6 +55,23 @@ export class ProductComponent implements OnInit {
 
   ngOnInit(): void {
     this.formAdd = this.fb.group({
+      name: this.fb.control('', [Validators.required]),
+      price: this.fb.control(0, [Validators.required]),
+      quantity: this.fb.control(0, [Validators.required]),
+      supplierId: this.fb.control(null, [Validators.required]),
+      categoryId: this.fb.control(null, [Validators.required]),
+      promotionPrice: this.fb.control(0),
+      warranty: this.fb.control(0),
+      frame: this.fb.control('', [Validators.required]),
+      rims: this.fb.control('', [Validators.required]),
+      tires: this.fb.control('', [Validators.required]),
+      weight: this.fb.control('', [Validators.required]),
+      weightLimit: this.fb.control('', [Validators.required]),
+      description: this.fb.control(''),
+      status: this.fb.control(true),
+      showOnHome: this.fb.control(true),
+    });
+    this.formEdit = this.fb.group({
       name: this.fb.control('', [Validators.required]),
       price: this.fb.control(0, [Validators.required]),
       quantity: this.fb.control(0, [Validators.required]),
@@ -146,7 +170,7 @@ export class ProductComponent implements OnInit {
     this.loadData(1);
   }
   onAdd(): void {
-    this.getEncodeFromImage(this.file_image).subscribe((data: any): void => {
+    this.getEncodeFromImage(this.files.first).subscribe((data: any): void => {
       let data_image = data == '' ? null : data;
       var product = this.formAdd.value;
       product.imageUrl = data_image;
@@ -164,6 +188,7 @@ export class ProductComponent implements OnInit {
                 detail: 'Thêm thành công !',
               });
               this.displayAdd = false;
+              this.clearModalAdd();
               this.loadData(1);
             }
           },
@@ -176,6 +201,132 @@ export class ProductComponent implements OnInit {
             });
           },
         });
+    });
+  }
+  onEdit(id: any): void {
+    this.spinner.show();
+    this.productService
+      .getEdit(id)
+      .pipe(first())
+      .subscribe({
+        next: (product) => {
+          //console.log(product);
+          this.displayEdit = true;
+          this.id_Edit = product.id;
+          this.img_url_edit = product.imageUrl;
+          this.formEdit = this.fb.group({
+            name: this.fb.control(product.name, [Validators.required]),
+            price: this.fb.control(product.price, [Validators.required]),
+            quantity: this.fb.control(product.quantity, [Validators.required]),
+            supplierId: this.fb.control(product.supplierId, [
+              Validators.required,
+            ]),
+            categoryId: this.fb.control(product.categoryId, [
+              Validators.required,
+            ]),
+            promotionPrice: this.fb.control(product.promotionPrice),
+            warranty: this.fb.control(product.warranty),
+            frame: this.fb.control(product.frame, [Validators.required]),
+            rims: this.fb.control(product.rims, [Validators.required]),
+            tires: this.fb.control(product.tires, [Validators.required]),
+            weight: this.fb.control(product.weight, [Validators.required]),
+            weightLimit: this.fb.control(product.weightLimit, [
+              Validators.required,
+            ]),
+            description: this.fb.control(product.description),
+            status: this.fb.control(product.status),
+            showOnHome: this.fb.control(product.showOnHome),
+          });
+          this.spinner.hide();
+        },
+        error: (err) => {
+          console.log(err);
+          this.spinner.hide();
+        },
+      });
+  }
+  onSave(): void {
+    if (this.id_Edit > 0) {
+      this.getEncodeFromImage(this.files.last).subscribe((data: any): void => {
+        console.log(data);
+        console.log(this.img_url_edit);
+        let data_image = data == '' ? this.img_url_edit : data;
+        var product = this.formEdit.value;
+        product.imageUrl = data_image;
+        product.supplierId = parseInt(this.formEdit.get('supplierId').value);
+        product.categoryId = parseInt(this.formEdit.get('categoryId').value);
+        this.productService
+          .updateProduct(this.id_Edit, product)
+          .pipe(first())
+          .subscribe({
+            next: (res) => {
+              //console.log(res);
+              if (res > 0) {
+                this.messageService.add({
+                  severity: 'success',
+                  summary: 'Thông báo',
+                  detail: 'Cập nhật thành công !',
+                });
+                this.displayEdit = false;
+                this.loadData(1);
+              }
+            },
+            error: (err) => {
+              console.log(err);
+              this.messageService.add({
+                severity: 'error',
+                summary: 'Thông báo',
+                detail: `Đã có lỗi !`,
+              });
+            },
+          });
+      });
+    }
+  }
+  onDelete(id: any) {
+    this.confirmationService.confirm({
+      header: 'Xoá nhà cung cấp ?',
+      message: 'Bạn có chắc chắn xoá ?',
+      accept: () => {
+        this.productService
+          .deleteProduct(id)
+          .pipe(first())
+          .subscribe({
+            next: (res) => {
+              //console.log(res);
+              if (res > 0) {
+                this.messageService.add({
+                  severity: 'success',
+                  summary: 'Thông báo',
+                  detail: 'Đã xoá thành công !',
+                });
+                this.loadData(1);
+              }
+            },
+            error: (err) => {
+              console.log(err);
+            },
+          });
+      },
+    });
+  }
+  clearModalAdd() {
+    this.formAdd = this.fb.group({
+      name: this.fb.control('', [Validators.required]),
+      price: this.fb.control(0, [Validators.required]),
+      quantity: this.fb.control(0, [Validators.required]),
+      supplierId: this.fb.control(null, [Validators.required]),
+      categoryId: this.fb.control(null, [Validators.required]),
+      promotionPrice: this.fb.control(0),
+      warranty: this.fb.control(0),
+      frame: this.fb.control('', [Validators.required]),
+      rims: this.fb.control('', [Validators.required]),
+      tires: this.fb.control('', [Validators.required]),
+      weight: this.fb.control('', [Validators.required]),
+      weightLimit: this.fb.control('', [Validators.required]),
+      description: this.fb.control(''),
+      status: this.fb.control(true),
+      showOnHome: this.fb.control(true),
     });
   }
   public getEncodeFromImage(fileUpload: FileUpload) {

@@ -23,8 +23,12 @@ export class ProductService {
     var body = JSON.stringify(product);
     return this.http.post<any>(url, body, httpOptions);
   }
-  getProduct(id: any): Observable<any> {
-    const url = `${this.API_URL}/${id}`;
+  getEdit(id: any): Observable<any> {
+    const url = `${this.API_URL}/${id}/edit`;
+    return this.http.get<any>(url);
+  }
+  getDetail(id: any): Observable<any> {
+    const url = `${this.API_URL}/${id}/detail`;
     return this.http.get<any>(url);
   }
   getDataSelectSupplier(): Observable<any> {

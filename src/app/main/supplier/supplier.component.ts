@@ -173,6 +173,11 @@ export class SupplierComponent implements OnInit {
           },
           error: (err) => {
             console.log(err);
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Thông báo',
+              detail: `Đã có lỗi !`,
+            });
           },
         });
     }
